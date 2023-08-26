@@ -4,55 +4,45 @@ unsigned suma_cifrelor(unsigned n)
 {
 	unsigned  sc = 0;
 
-	while (n != 0) {
-		sc += n % 10;
-		n /= 10;
-	}
+	while (n != 0) { sc += n % 10; n /= 10; }
 
 	return sc;
 }
 
-unsigned short sufix_din_trei_cifre(unsigned n)
+unsigned short sufix_din_trei_cifre(unsigned n, unsigned k)
 {
-	char cifra_sutelor, cifra_zecilor, cifra_unitatilor;
+	if (n > 99 && n < 1000) return n;
 
-	if (n < 100) return 0;
+	if (n > 999) return (n/100%10*100 + n/10%10*10 + n%10);
 
-	if (n < 1000) return n;
+	while (n < 100 && k > 1) {
+		n = n > 9 ? n*100 + n : n*10 + n;
+		k--;
+	}
+	
+	if (n > 999) return sufix_din_trei_cifre(n, 1);
 
-	cifra_sutelor = n / 100 % 10;
-
-	cifra_zecilor = n / 10 % 10;
-
-	cifra_unitatilor = n % 10;
-
-	return cifra_sutelor * 100 + cifra_zecilor * 10 + cifra_unitatilor;
+	return n;
 }
 
 int main()
 {
-	unsigned n, k, r1, r2, sufix;
+	unsigned n, k;
+	unsigned short r1, r2;
+	short R;
 
 	scanf("%u %u", &n, &k);
+	
+	r1 = (unsigned long long)suma_cifrelor(n) * k % 9;
 
-	r1 = (suma_cifrelor(n) * k) % 9;
+	r2 = sufix_din_trei_cifre(n, k) % 8;
 
-	sufix = sufix_din_trei_cifre(n);
+	R = 9*r2 - 8*r1;
 
-	if (sufix == 0) {
-		if (n < 10 && k > 2)
-			sufix = n * 100 + n * 10 + n;
-		else if (n < 100 && k > 1)
-		       	sufix = sufix_din_trei_cifre(n * 100 + n);
-		else 
-			sufix = n;
-	}
+	if (R < 0) R += 72;
 
-	r2 = sufix % 8;
-
-	printf("%u", 9 * r2 - 8 * r1);
+	printf("%hu", R);
 
 	return 0;
 }
-
-// scor 60
+// scor 100
